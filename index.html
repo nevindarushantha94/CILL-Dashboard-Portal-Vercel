@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0b3a63">
+  <meta name="description" content="Continental Insurance Lanka Ltd. Management Dashboard Portal">
+
+  <title>CILL Management Dashboard Portal</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --navy: #0b3a63;
+      --blue: #155b91;
+      --light-blue: #eef5fa;
+      --border: #d9e4ec;
+      --text: #17324a;
+      --muted: #66798a;
+      --white: #ffffff;
+      --shadow: 0 18px 45px rgba(16, 52, 78, 0.10);
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: "Times New Roman", Times, serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 10% 0%, rgba(21, 91, 145, 0.07), transparent 30%),
+        radial-gradient(circle at 90% 100%, rgba(11, 58, 99, 0.06), transparent 35%),
+        #f7fafc;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .top-line {
+      height: 5px;
+      background: var(--navy);
+      width: 100%;
+    }
+
+    header {
+      background: rgba(255, 255, 255, 0.96);
+      border-bottom: 1px solid var(--border);
+      padding: 26px 28px 22px;
+    }
+
+    .header-inner {
+      width: min(1180px, 100%);
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 17px;
+    }
+
+    .brand-mark {
+      width: 54px;
+      height: 54px;
+      border: 2px solid var(--navy);
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      color: var(--navy);
+      font-size: 22px;
+      font-weight: bold;
+      letter-spacing: 1px;
+      background: var(--white);
+    }
+
+    .brand-text .company {
+      color: var(--navy);
+      font-size: clamp(18px, 2vw, 23px);
+      font-weight: bold;
+      letter-spacing: 0.3px;
+    }
+
+    .brand-text .portal {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .status {
+      color: var(--blue);
+      background: var(--light-blue);
+      border: 1px solid #d8e7f2;
+      border-radius: 999px;
+      padding: 8px 15px;
+      font-size: 14px;
+      white-space: nowrap;
+    }
+
+    main {
+      flex: 1;
+      width: min(1180px, 100%);
+      margin: 0 auto;
+      padding: 64px 28px 72px;
+    }
+
+    .intro {
+      text-align: center;
+      max-width: 760px;
+      margin: 0 auto 46px;
+    }
+
+    .eyebrow {
+      color: var(--blue);
+      font-size: 14px;
+      font-weight: bold;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 13px;
+    }
+
+    h1 {
+      color: var(--navy);
+      font-size: clamp(31px, 4.5vw, 48px);
+      line-height: 1.08;
+      font-weight: bold;
+    }
+
+    .intro p {
+      color: var(--muted);
+      font-size: 17px;
+      line-height: 1.6;
+      margin-top: 17px;
+    }
+
+    .dashboards {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 28px;
+      max-width: 1050px;
+      margin: 0 auto;
+    }
+
+    .dashboard-card {
+      position: relative;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 32px 32px 29px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      transition:
+        transform 180ms ease,
+        box-shadow 180ms ease,
+        border-color 180ms ease;
+    }
+
+    .dashboard-card::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 4px;
+      background: var(--navy);
+    }
+
+    .dashboard-card:hover {
+      transform: translateY(-5px);
+      border-color: #b9cedd;
+      box-shadow: 0 24px 55px rgba(16, 52, 78, 0.14);
+    }
+
+    .card-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 28px;
+    }
+
+    .card-letter {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: var(--light-blue);
+      color: var(--navy);
+      display: grid;
+      place-items: center;
+      font-size: 23px;
+      font-weight: bold;
+      border: 1px solid #d9e8f2;
+    }
+
+    .card-type {
+      color: var(--muted);
+      font-size: 13px;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      text-align: right;
+      padding-top: 5px;
+    }
+
+    .dashboard-card h2 {
+      color: var(--navy);
+      font-size: 25px;
+      line-height: 1.22;
+      margin-bottom: 11px;
+    }
+
+    .dashboard-card .subtitle {
+      color: var(--blue);
+      font-size: 17px;
+      font-weight: bold;
+      margin-bottom: 15px;
+    }
+
+    .dashboard-card .description {
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.55;
+      min-height: 51px;
+      margin-bottom: 28px;
+    }
+
+    .open-btn {
+      width: 100%;
+      min-height: 50px;
+      border: 0;
+      border-radius: 10px;
+      background: var(--navy);
+      color: white;
+      font-family: inherit;
+      font-size: 17px;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      text-decoration: none;
+      transition: background 180ms ease, transform 180ms ease;
+    }
+
+    .open-btn:hover {
+      background: var(--blue);
+    }
+
+    .open-btn:active {
+      transform: scale(0.99);
+    }
+
+    .arrow {
+      font-family: Arial, sans-serif;
+      font-size: 18px;
+      transition: transform 180ms ease;
+    }
+
+    .open-btn:hover .arrow {
+      transform: translateX(4px);
+    }
+
+    .note {
+      max-width: 1050px;
+      margin: 32px auto 0;
+      padding: 15px 18px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.75);
+      color: var(--muted);
+      text-align: center;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    footer {
+      border-top: 1px solid var(--border);
+      background: var(--white);
+      padding: 18px 28px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    @media (max-width: 760px) {
+      header {
+        padding: 20px 18px;
+      }
+
+      .header-inner {
+        align-items: flex-start;
+      }
+
+      .status {
+        display: none;
+      }
+
+      .brand-mark {
+        width: 47px;
+        height: 47px;
+        font-size: 19px;
+      }
+
+      .brand-text .company {
+        font-size: 18px;
+      }
+
+      .brand-text .portal {
+        font-size: 13px;
+      }
+
+      main {
+        padding: 45px 18px 55px;
+      }
+
+      .intro {
+        margin-bottom: 32px;
+      }
+
+      .intro p {
+        font-size: 16px;
+      }
+
+      .dashboards {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+
+      .dashboard-card {
+        padding: 27px 23px 24px;
+      }
+
+      .dashboard-card h2 {
+        font-size: 23px;
+      }
+    }
+
+    @media (max-width: 420px) {
+      .brand {
+        gap: 11px;
+      }
+
+      .brand-text .company {
+        font-size: 16px;
+      }
+
+      .brand-text .portal {
+        font-size: 12px;
+      }
+
+      h1 {
+        font-size: 32px;
+      }
+
+      .dashboard-card .description {
+        min-height: auto;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="top-line"></div>
+
+  <header>
+    <div class="header-inner">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">CILL</div>
+        <div class="brand-text">
+          <div class="company">Continental Insurance Lanka Ltd.</div>
+          <div class="portal">Management Dashboard Portal</div>
+        </div>
+      </div>
+
+      <div class="status">Dashboard Access</div>
+    </div>
+  </header>
+
+  <main>
+    <section class="intro">
+      <div class="eyebrow">Management Information</div>
+      <h1>Management Dashboards</h1>
+      <p>
+        Select a dashboard below to access the relevant management analysis.
+        Each dashboard opens independently in its own page.
+      </p>
+    </section>
+
+    <section class="dashboards" aria-label="Available dashboards">
+
+      <!-- Dashboard A -->
+      <article class="dashboard-card">
+        <div class="card-top">
+          <div class="card-letter">A</div>
+          <div class="card-type">Industry Analysis</div>
+        </div>
+
+        <h2>GI Industry Dashboard</h2>
+        <div class="subtitle">Q2 2025 vs Q2 2026</div>
+
+        <p class="description">
+          Industry GWP, market share, ranking and net claim ratio analysis,
+          including Continental Insurance performance.
+        </p>
+
+        <!-- Rename the target file if your actual filename is different -->
+        <a class="open-btn" href="gi-industry-dashboard.html">
+          Open Dashboard
+          <span class="arrow" aria-hidden="true">→</span>
+        </a>
+      </article>
+
+      <!-- Dashboard B -->
+      <article class="dashboard-card">
+        <div class="card-top">
+          <div class="card-letter">B</div>
+          <div class="card-type">Medical Claims</div>
+        </div>
+
+        <h2>Medical Claims Dashboard</h2>
+        <div class="subtitle">As of 31.08.2026</div>
+
+        <p class="description">
+          Medical claims management dashboard covering the January to August
+          2026 period with operational and management insights.
+        </p>
+
+        <!-- Rename the target file if your actual filename is different -->
+        <a class="open-btn" href="medical-claims-dashboard.html">
+          Open Dashboard
+          <span class="arrow" aria-hidden="true">→</span>
+        </a>
+      </article>
+
+    </section>
+
+    <div class="note">
+      Dashboard data and filters operate within each individual dashboard page.
+      <br>
+      <strong>Navigation:</strong> Each dashboard should include a <em>Back to Home</em>
+      button to return to this portal.
+    </div>
+  </main>
+
+  <footer>
+    Continental Insurance Lanka Ltd. &nbsp;|&nbsp; Management Dashboard Portal &nbsp;|&nbsp; Developed by Nevinda Rushantha
+  </footer>
+<!--
+  BACK TO HOME BUTTON FOR THE TWO DASHBOARD HTML FILES
+
+  Add this button to each dashboard page:
+  <a href="index.html" class="back-home-btn">← Back to Home</a>
+
+  Because the dashboard files are in the same folder as index.html,
+  href="index.html" returns directly to this home screen.
+-->
+</body>
+</html>

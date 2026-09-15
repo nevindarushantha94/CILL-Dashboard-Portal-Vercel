@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GI Industry Dashboard – Cumulative 2Q 2025 vs 2Q 2026</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"></script>
+<style>
+:root{--bg:#f0f4fb;--card:#ffffff;--card2:#f8fafc;--border:#dde3ed;--gold:#d97706;--goldd:#b45309;--b25:#4a7cbf;--b26:#1d6fdb;--txt:#1e2d42;--muted:#64748b;--green:#059669;--red:#dc2626;--teal:#0d9488;}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;background:var(--bg);color:var(--txt);font-family:'Times New Roman',Times,serif;}
+body{padding-bottom:76px;min-width:1100px;font-family:'Times New Roman',Times,serif;}
+
+/* HEADER */
+.hdr{background:linear-gradient(135deg,#ffffff 0%,#f0f6ff 100%);padding:18px 32px;display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid var(--gold);position:sticky;top:0;z-index:900;box-shadow:0 2px 12px rgba(0,0,0,.06);}
+.hdr-l h1{font-size:25px;font-weight:700;letter-spacing:.4px;color:#1e2d42;}
+.hdr-l p{font-size:14.5px;color:#64748b;margin-top:4px;}
+.badge{background:var(--gold);color:#060d1a;padding:7px 20px;border-radius:20px;font-weight:800;font-size:15px;letter-spacing:.5px;}
+
+/* TABS */
+.tabs{background:#ffffff;display:flex;gap:0;border-bottom:2px solid var(--border);padding:0 32px;position:sticky;top:63px;z-index:800;box-shadow:0 2px 8px rgba(0,0,0,.04);}
+.tab-btn{padding:17px 30px;cursor:pointer;font-size:20px;font-weight:600;color:var(--muted);background:none;border:none;border-bottom:4px solid transparent;margin-bottom:-1px;transition:all .2s;letter-spacing:.3px;font-family:'Times New Roman',Times,serif;}
+.tab-btn:hover{color:var(--txt);background:#fffbeb;}
+.tab-btn.active{color:var(--goldd);border-bottom-color:var(--gold);background:#fff7e0;font-weight:800;}
+
+/* CONTENT */
+.tab-pane{display:none;padding:24px 32px;}
+.tab-pane.active{display:block;}
+
+/* KPI ROW */
+.kpi-row{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:22px;}
+.kpi{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:26px 26px;}
+.kpi.gold{border-color:var(--gold);background:linear-gradient(135deg,#fffbeb,#fff7e0);border-width:2px;}
+.kpi-lbl{font-size:15.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px;}
+.kpi-val{font-size:33px;font-weight:800;}
+.kpi-sub{font-size:15px;margin-top:8px;}
+.up{color:var(--green);}
+.dn{color:var(--red);}
+.nt{color:var(--muted);}
+
+/* CARDS */
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:22px 24px;margin-bottom:22px;}
+.card-t{font-size:22px;font-weight:700;color:var(--txt);margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+.card-t::before{content:'';width:5px;height:21px;background:var(--gold);border-radius:2px;display:inline-block;flex-shrink:0;}
+.card-note{font-size:13.5px;color:#64748b;margin-top:-10px;margin-bottom:12px;padding-left:12px;background:#f8fafc;border-radius:4px;padding:8px 14px;margin-bottom:14px;}
+
+/* CHART CONTAINERS */
+.chart-wrap{position:relative;width:100%;margin-bottom:16px;}
+
+/* 2-COL GRID */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;}
+
+/* LEGEND */
+.legend{display:flex;gap:20px;font-size:16.5px;margin-bottom:12px;flex-wrap:wrap;}
+.legend-i{display:flex;align-items:center;gap:6px;}
+.dot{width:15px;height:11px;border-radius:3px;flex-shrink:0;}
+
+/* TABLES */
+.tbl-wrap{overflow-x:auto;margin-top:4px;}
+table{width:100%;border-collapse:collapse;font-size:17.5px;}
+thead th{background:#f1f5fb;color:#475569;padding:15px 16px;text-align:right;font-size:16px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;border-bottom:2px solid var(--border);white-space:nowrap;}
+thead th:first-child{text-align:left;}
+tbody td{padding:14px 16px;text-align:right;border-bottom:1px solid #e8edf5;white-space:nowrap;}
+tbody td:first-child{text-align:left;font-weight:600;}
+tbody tr:hover td{background:#f5f8ff;}
+tbody tr.cont td{background:rgba(217,119,6,.09);color:#92400e;font-weight:700;}
+tbody tr.cont td:first-child::after{content:' ★';font-size:12px;}
+tbody tr.tot-row td{background:#eef2f8;font-weight:700;border-top:2px solid var(--border);}
+.up2{color:var(--green);}
+.dn2{color:var(--red);}
+.nt2{color:var(--muted);}
+.tag-up{background:#d1fae5;color:#065f46;padding:2px 7px;border-radius:4px;font-size:13px;}
+.tag-dn{background:#fee2e2;color:#991b1b;padding:2px 7px;border-radius:4px;font-size:13px;}
+.tag-nt{background:#e2e8f0;color:#475569;padding:2px 7px;border-radius:4px;font-size:13px;}
+
+/* RANK TABLE */
+.rank-tbl{width:100%;border-collapse:collapse;font-size:17.5px;}
+.rank-tbl th{background:#f1f5fb;color:#475569;padding:15px 18px;text-align:center;font-size:16px;font-weight:700;text-transform:uppercase;border-bottom:2px solid var(--border);}
+.rank-tbl th:first-child{text-align:left;}
+.rank-tbl td{padding:13px 16px;text-align:center;border-bottom:1px solid #e8edf5;}
+.rank-tbl td:first-child{text-align:left;font-weight:600;}
+.rank-tbl tr.cont td{background:rgba(217,119,6,.08);color:#92400e;font-weight:700;}
+.rank-num{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;background:#e2e8f0;font-weight:800;font-size:16px;color:#1e2d42;}
+.rank-1{background:var(--gold);color:#060d1a;}
+.rank-2{background:#94a3b8;color:#060d1a;}
+.rank-3{background:#b45309;color:#fff;}
+.mov-up{color:#059669;font-weight:800;}
+.mov-dn{color:#dc2626;font-weight:800;}
+.mov-nt{color:#94a3b8;}
+
+/* FILTER BAR */
+.fbar{position:fixed;bottom:0;left:0;right:0;background:#ffffff;border-top:2px solid var(--gold);padding:12px 32px;display:flex;align-items:center;gap:9px;z-index:1000;flex-wrap:nowrap;overflow-x:auto;box-shadow:0 -2px 12px rgba(0,0,0,.08);}
+.flbl{font-size:13px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.6px;margin-right:6px;white-space:nowrap;}
+.fbtn{padding:7px 18px;border-radius:20px;border:1px solid #cbd5e1;background:transparent;color:#475569;font-size:14px;cursor:pointer;transition:all .2s;font-weight:600;white-space:nowrap;font-family:'Times New Roman',Times,serif;}
+.fbtn:hover{border-color:var(--gold);color:#1e2d42;background:#fffbeb;}
+.fbtn.active{background:var(--gold);color:#060d1a;border-color:var(--gold);}
+
+/* NLR special */
+.nlr-good{color:#059669;font-weight:600;}
+.nlr-warn{color:#d97706;font-weight:600;}
+.nlr-bad{color:#dc2626;font-weight:600;}
+.ref-line-note{font-size:13px;color:#64748b;text-align:right;margin-top:4px;}
+
+/* FOOTER / BRANDING */
+.app-footer{max-width:1100px;margin:26px auto 8px;padding:14px 22px;border-top:1px solid var(--border);text-align:center;font-size:12.5px;color:#8493a8;line-height:1.7;font-family:'Times New Roman',Times,serif;}
+.app-footer b{color:#5b6b82;font-weight:700;}
+.app-footer .fdiv{margin:0 10px;color:#c7d0dd;}
+</style>
+
+<style id="back-home-style">
+  .back-home-btn {
+    position: fixed;
+    top: 16px;
+    right: 24px;
+    z-index: 1200;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 40px;
+    padding: 9px 16px;
+    border: 1px solid #cbd5e1;
+    border-radius: 9px;
+    background: rgba(255,255,255,.97);
+    color: #0b3a63;
+    font-family: "Times New Roman", Times, serif;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: .2px;
+    text-decoration: none;
+    box-shadow: 0 4px 14px rgba(15,42,66,.12);
+    backdrop-filter: blur(6px);
+    transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease, background .18s ease;
+  }
+  .back-home-btn:hover {
+    transform: translateY(-1px);
+    border-color: #9fb8cc;
+    background: #f8fbfd;
+    box-shadow: 0 7px 18px rgba(15,42,66,.16);
+  }
+  .back-home-btn:active { transform: translateY(0); }
+  .back-home-arrow { font-family: Arial, sans-serif; font-size: 17px; line-height: 1; }
+  @media (max-width: 700px) {
+    .back-home-btn { top: 10px; right: 12px; min-height: 36px; padding: 7px 11px; font-size: 13px; }
+  }
+</style>
+</head>
+<body>
+<a class="back-home-btn" href="index.html" aria-label="Back to dashboard home"><span class="back-home-arrow">←</span> Back to Home</a>
+
+<div class="hdr">
+  <div class="hdr-l">
+    <h1>🏦 Sri Lanka GI Industry Dashboard</h1>
+    <p>Cumulative 2Q 2025 vs 2Q 2026 (Year-to-Date) &nbsp;|&nbsp; All monetary figures in LKR (auto-scaled K / Mn / Bn) &nbsp;|&nbsp; Source: Industry Returns</p>
+  </div>
+  <div class="badge">CONTINENTAL INSURANCE ★</div>
+</div>
+
+<div class="tabs">
+  <button class="tab-btn active" onclick="switchTab(0)">📊 Industry GWP Figures</button>
+  <button class="tab-btn" onclick="switchTab(1)">📉 Industry Net Claim Ratio</button>
+  <button class="tab-btn" onclick="switchTab(2)">🏢 Continental Insurance</button>
+</div>
+
+<!-- ═══════════════════════════════════════════════ TAB 1 ═══════════════════════ -->
+<div class="tab-pane active" id="tab0">
+
+  <!-- KPIs -->
+  <div class="kpi-row">
+    <div class="kpi">
+      <div class="kpi-lbl">Industry GWP – 2Q 2025 (Cum.)</div>
+      <div class="kpi-val" style="color:#4a7cbf" title="Rs. 73,711,370,000.00">Rs. 73.71 Bn</div>
+      <div class="kpi-sub nt">Base Period</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-lbl">Industry GWP – 2Q 2026 (Cum.)</div>
+      <div class="kpi-val" style="color:#1d6fdb" title="Rs. 88,531,090,000.00">Rs. 88.53 Bn</div>
+      <div class="kpi-sub up">▲ 20.11% Growth YoY</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-lbl">Industry Leader 2026</div>
+      <div class="kpi-val" style="font-size:20px">SLIC General</div>
+      <div class="kpi-sub up">↑ Rank 2→1 &nbsp;|&nbsp; 20.47% Share</div>
+    </div>
+    <div class="kpi gold">
+      <div class="kpi-lbl" style="color:#f5a623">Continental GWP 2026</div>
+      <div class="kpi-val" style="color:var(--gold)" title="Rs. 6,250,490,000.00">Rs. 6.25 Bn</div>
+      <div class="kpi-sub dn">▼ 5.61% Decline &nbsp;|&nbsp; Rank #6</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-lbl">Motor vs Non-Motor (Industry 2026)</div>
+      <div class="kpi-val" style="font-size:21px">59.1% Motor</div>
+      <div class="kpi-sub nt">vs 54.2% in 2Q 2025</div>
+    </div>
+  </div>
+
+  <!-- Class GWP Comparison -->
+  <div class="card">
+    <div class="card-t" id="gwpChartTitle">Class GWP Comparison – All Classes (Total)</div>
+    <div class="card-note">★ Continental Insurance highlighted in Gold &nbsp;|&nbsp; Select class from filter below</div>
+    <div class="legend">
+      <div class="legend-i"><div class="dot" style="background:#4a7cbf"></div> Q2 2025</div>
+      <div class="legend-i"><div class="dot" style="background:#1d6fdb"></div> Q2 2026</div>
+      <div class="legend-i"><div class="dot" style="background:#c47d0a"></div> Continental 2025</div>
+      <div class="legend-i"><div class="dot" style="background:#f5a623"></div> Continental 2026</div>
+    </div>
+    <div class="chart-wrap" style="height:360px"><canvas id="gwpChart"></canvas></div>
+    <div class="tbl-wrap"><div id="gwpTable"></div></div>
+  </div>
+
+  <!-- Motor vs Non-Motor -->
+  <div class="card">
+    <div class="card-t">Motor vs Non-Motor Analysis – All Companies</div>
+    <div class="card-note">Total non-motor and motor GWP by company, 2025 vs 2026</div>
+    <div class="g2">
+      <div>
+        <div style="font-size:14px;font-weight:700;color:var(--teal);margin-bottom:10px;">NON-MOTOR GWP (LKR)</div>
+        <div class="legend">
+          <div class="legend-i"><div class="dot" style="background:#4a7cbf"></div> Q2 2025</div>
+          <div class="legend-i"><div class="dot" style="background:#0d9488"></div> Q2 2026</div>
+        </div>
+        <div class="chart-wrap" style="height:300px"><canvas id="nmChart"></canvas></div>
+      </div>
+      <div>
+        <div style="font-size:14px;font-weight:700;color:#6366f1;margin-bottom:10px;">MOTOR GWP (LKR)</div>
+        <div class="legend">
+          <div class="legend-i"><div class="dot" style="background:#4a7cbf"></div> Q2 2025</div>
+          <div class="legend-i"><div class="dot" style="background:#6366f1"></div> Q2 2026</div>
+        </div>
+        <div class="chart-wrap" style="height:300px"><canvas id="mChart"></canvas></div>
+      </div>
+    </div>
+    <div class="tbl-wrap" style="margin-top:14px">
+      <table>
+        <thead><tr><th>Company</th><th>Non-Motor 2025</th><th>Non-Motor 2026</th><th>NM Growth</th><th>Motor 2025</th><th>Motor 2026</th><th>Motor Growth</th><th>Motor Ratio 2025</th><th>Motor Ratio 2026</th></tr></thead>
+        <tbody id="motorTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Market Share -->
+  <div class="card">
+    <div class="card-t" id="mktShareTitle">Market Share – Total GWP</div>
+    <div class="card-note">Horizontal bar shows each company's share of total industry GWP</div>
+    <div class="g2">
+      <div>
+        <div style="font-size:14px;font-weight:700;color:var(--muted);margin-bottom:10px;text-align:center;">Q2 2025 Market Share</div>
+        <div class="chart-wrap" style="height:330px"><canvas id="ms25Chart"></canvas></div>
+      </div>
+      <div>
+        <div style="font-size:14px;font-weight:700;color:var(--txt);margin-bottom:10px;text-align:center;">Q2 2026 Market Share</div>
+        <div class="chart-wrap" style="height:330px"><canvas id="ms26Chart"></canvas></div>
+      </div>
+    </div>
+    <div class="tbl-wrap" style="margin-top:4px"><div id="mktShareTable"></div></div>
+  </div>
+
+  <!-- Market Rank -->
+  <div class="card">
+    <div class="card-t" id="rankTitle">Market Rank – By Total GWP</div>
+    <div id="rankTableWrap"></div>
+  </div>
+
+</div><!-- end tab0 -->
+
+<!-- ═══════════════════════════════════════════════ TAB 2 ═══════════════════════ -->
+<div class="tab-pane" id="tab1">
+  <div class="kpi-row" style="grid-template-columns:repeat(4,1fr)">
+    <div class="kpi">
+      <div class="kpi-lbl">Benchmark – Ideal NCR</div>
+      <div class="kpi-val" style="color:var(--green)">Below 70%</div>
+      <div class="kpi-sub nt">Industry best practice</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-lbl">Caution Zone</div>
+      <div class="kpi-val" style="color:#f59e0b">70% – 100%</div>
+      <div class="kpi-sub nt">Monitor closely</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-lbl">Loss Making</div>
+      <div class="kpi-val" style="color:var(--red)">Above 100%</div>
+      <div class="kpi-sub nt">Underwriting loss</div>
+    </div>
+    <div class="kpi gold">
+      <div class="kpi-lbl" style="color:var(--gold)">Continental Total NCR 2026</div>
+      <div class="kpi-val" style="color:#f59e0b;font-size:25px">80.0%</div>
+      <div class="kpi-sub nt" style="color:#f5a623">vs 69.9% in 2Q 2025 ▲</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-t" id="nlrChartTitle">Net Claim Ratio – All Companies (Total)</div>
+    <div class="card-note">Dashed red line = 100% (Loss threshold) &nbsp;|&nbsp; Values shown as % &nbsp;|&nbsp; Extreme outliers noted in table</div>
+    <div class="legend">
+      <div class="legend-i"><div class="dot" style="background:#4a7cbf"></div> Q2 2025</div>
+      <div class="legend-i"><div class="dot" style="background:#1d6fdb"></div> Q2 2026</div>
+      <div class="legend-i"><div class="dot" style="background:#c47d0a"></div> Continental 2025</div>
+      <div class="legend-i"><div class="dot" style="background:#f5a623"></div> Continental 2026</div>
+      <div class="legend-i"><div class="dot" style="background:#f43f5e"></div> 100% Threshold</div>
+    </div>
+    <div class="chart-wrap" style="height:420px"><canvas id="nlrChart"></canvas></div>
+    <div class="ref-line-note">⚠ Values capped at ±300% for chart readability. Actual values shown in table below.</div>
+    <div class="tbl-wrap" style="margin-top:14px"><div id="nlrTable"></div></div>
+  </div>
+</div><!-- end tab1 -->
+
+<!-- ═══════════════════════════════════════════════ TAB 3 ═══════════════════════ -->
+<div class="tab-pane" id="tab2">
+
+  <div class="kpi-row">
+    <div class="kpi gold">
+      <div class="kpi-lbl" style="color:var(--gold)" id="kpiContGwp25Lbl">Total GWP – 2Q 2025 (Cum.)</div>
+      <div class="kpi-val" style="color:#c47d0a" title="Rs. 6,622,000,000.00" id="kpiContGwp25">Rs. 6.62 Bn</div>
+      <div class="kpi-sub nt" style="color:var(--muted)">Base Period</div>
+    </div>
+    <div class="kpi gold">
+      <div class="kpi-lbl" style="color:var(--gold)" id="kpiContGwp26Lbl">Total GWP – 2Q 2026 (Cum.)</div>
+      <div class="kpi-val" style="color:var(--red)" title="Rs. 6,250,490,000.00" id="kpiContGwp26">Rs. 6.25 Bn</div>
+      <div class="kpi-sub dn" id="kpiContGwp26Sub">▼ 5.61% YoY Decline</div>
+    </div>
+    <div class="kpi gold">
+      <div class="kpi-lbl" style="color:var(--gold)" id="kpiContRankLbl">Market Rank 2026</div>
+      <div class="kpi-val" style="color:var(--gold)" id="kpiContRank">#6 of 13</div>
+      <div class="kpi-sub nt" style="color:var(--muted)" id="kpiContRankSub">Stable – Same as 2025</div>
+    </div>
+    <div class="kpi gold">
+      <div class="kpi-lbl" style="color:var(--gold)" id="kpiContShareLbl">Market Share 2026</div>
+      <div class="kpi-val" style="color:var(--red)" id="kpiContShare">7.06%</div>
+      <div class="kpi-sub dn" id="kpiContShareSub">▼ from 8.98% in 2Q 2025</div>
+    </div>
+    <div class="kpi gold">
+      <div class="kpi-lbl" style="color:var(--gold)">Motor Ratio 2026</div>
+      <div class="kpi-val" style="color:var(--gold)">42.44%</div>
+      <div class="kpi-sub up">▲ from 31.05% in 2Q 2025</div>
+    </div>
+  </div>
+
+  <!-- Continental GWP by class -->
+  <div class="card">
+    <div class="card-t">Continental Insurance – GWP by Class (Q2 2025 vs Q2 2026)</div>
+    <div class="g2">
+      <div>
+        <div class="legend">
+          <div class="legend-i"><div class="dot" style="background:#c47d0a"></div> Q2 2025</div>
+          <div class="legend-i"><div class="dot" style="background:#f5a623"></div> Q2 2026</div>
+        </div>
+        <div class="chart-wrap" style="height:320px"><canvas id="contGwpChart"></canvas></div>
+      </div>
+      <div>
+        <div style="font-size:14px;font-weight:700;color:var(--muted);margin-bottom:10px">GWP Mix – Q2 2026 vs Q2 2025 Comparison</div>
+        <div class="chart-wrap" style="height:320px"><canvas id="contMixChart"></canvas></div>
+      </div>
+    </div>
+    <div class="tbl-wrap" style="margin-top:14px">
+      <table>
+        <thead><tr><th>Class</th><th>2Q 2025</th><th>2Q 2026</th><th>Growth %</th><th>2025 Mix%</th><th>2026 Mix%</th></tr></thead>
+        <tbody>
+          <tr><td>Fire &amp; Engineering</td><td title="Rs. 1,654,000,000.00">Rs. 1.65 Bn</td><td title="Rs. 1,377,050,000.00">Rs. 1.38 Bn</td><td class="dn2">▼ -16.74%</td><td>25.0%</td><td>22.0%</td></tr>
+          <tr><td>Marine</td><td title="Rs. 39,000,000.00">Rs. 39.00 Mn</td><td title="Rs. 104,060,000.00">Rs. 104.06 Mn</td><td class="up2">▲ +166.82%</td><td>0.6%</td><td>1.7%</td></tr>
+          <tr><td>Medical</td><td title="Rs. 2,286,000,000.00">Rs. 2.29 Bn</td><td title="Rs. 1,325,660,000.00">Rs. 1.33 Bn</td><td class="dn2">▼ -42.01%</td><td>34.5%</td><td>21.2%</td></tr>
+          <tr><td>Gen Accident &amp; Misc</td><td title="Rs. 587,000,000.00">Rs. 587.00 Mn</td><td title="Rs. 791,270,000.00">Rs. 791.27 Mn</td><td class="up2">▲ +34.80%</td><td>8.9%</td><td>12.7%</td></tr>
+          <tr class="tot-row"><td>Total Non-Motor</td><td title="Rs. 4,566,000,000.00">Rs. 4.57 Bn</td><td title="Rs. 3,598,040,000.00">Rs. 3.60 Bn</td><td class="dn2">▼ -21.19%</td><td>69.0%</td><td>57.6%</td></tr>
+          <tr><td>Motor</td><td title="Rs. 2,056,000,000.00">Rs. 2.06 Bn</td><td title="Rs. 2,652,460,000.00">Rs. 2.65 Bn</td><td class="up2">▲ +29.01%</td><td>31.0%</td><td>42.4%</td></tr>
+          <tr class="tot-row"><td>TOTAL</td><td title="Rs. 6,622,000,000.00">Rs. 6.62 Bn</td><td title="Rs. 6,250,490,000.00">Rs. 6.25 Bn</td><td class="dn2">▼ -5.61%</td><td>100.0%</td><td>100.0%</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Continental vs Industry -->
+  <div class="card">
+    <div class="card-t">Continental vs Industry – Market Position Q2 2026</div>
+    <div class="g2">
+      <div>
+        <div style="font-size:15px;font-weight:700;color:var(--muted);margin-bottom:10px" id="vsIndustryTitle">GWP Comparison – Continental vs Peers (Q2 2026, LKR)</div>
+        <div class="chart-wrap" style="height:330px"><canvas id="vsIndustryChart"></canvas></div>
+      </div>
+      <div>
+        <div style="font-size:15px;font-weight:700;color:var(--muted);margin-bottom:10px" id="mktTrendTitle">Market Share Trend – Q2 2025 vs Q2 2026</div>
+        <div class="chart-wrap" style="height:330px"><canvas id="mktTrendChart"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Continental NLR -->
+  <div class="card">
+    <div class="card-t">Continental Net Claim Ratio – By Class (Q2 2025 vs Q2 2026)</div>
+    <div class="card-note">Red dashed line = 100% threshold (underwriting loss) &nbsp;|&nbsp; Lower is better</div>
+    <div class="g2">
+      <div>
+        <div class="legend">
+          <div class="legend-i"><div class="dot" style="background:#c47d0a"></div> Q2 2025</div>
+          <div class="legend-i"><div class="dot" style="background:#f5a623"></div> Q2 2026</div>
+        </div>
+        <div class="chart-wrap" style="height:300px"><canvas id="contNlrChart"></canvas></div>
+      </div>
+      <div>
+        <div style="font-size:14px;font-weight:700;color:var(--muted);margin-bottom:10px">Continental NCR Detail</div>
+        <table>
+          <thead><tr><th>Class</th><th>NCR 2Q 2025</th><th>NCR 2Q 2026</th><th>Movement</th></tr></thead>
+          <tbody>
+            <tr><td>Fire &amp; Engineering</td><td class="nlr-good">10.12%</td><td class="nlr-good">-17.59%*</td><td class="up2">▼ Improved</td></tr>
+            <tr><td>Marine</td><td class="nlr-good">6.79%</td><td class="nlr-good">1.09%</td><td class="up2">▼ Improved</td></tr>
+            <tr><td>Medical</td><td class="nlr-warn">88.99%</td><td class="nlr-bad">107.35%</td><td class="dn2">▲ Worsened</td></tr>
+            <tr><td>Gen Accident &amp; Misc</td><td class="nlr-good">22.64%</td><td class="nlr-good">61.74%</td><td class="dn2">▲ Worsened</td></tr>
+            <tr><td>Motor</td><td class="nlr-good">58.32%</td><td class="nlr-good">66.44%</td><td class="dn2">▲ Worsened</td></tr>
+            <tr class="tot-row"><td><b>TOTAL</b></td><td class="nlr-good"><b>69.90%</b></td><td class="nlr-warn"><b>80.00%</b></td><td class="dn2"><b>▲ +10.10 pts</b></td></tr>
+          </tbody>
+        </table>
+        <p style="font-size:12px;color:var(--muted);margin-top:10px;">* Negative NCR = net claims recovered (reinsurance recovery or reversal)</p>
+        <div style="margin-top:18px;padding:12px;background:#fff1f2;border-radius:8px;border-left:3px solid #dc2626;">
+          <p style="font-size:17px;color:#dc2626;font-weight:700;margin-bottom:6px;">⚠ Key Watch Areas</p>
+          <p style="font-size:16px;color:#64748b" id="contInsightText">Medical NCR at 107.4% – underwriting loss. Gen Accident and Motor NCR both worsened alongside a 5.6% decline in total GWP. Overall NCR increased by 10.10 percentage points YoY.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end tab2 -->
+
+<div class="app-footer">
+  <div><b>Prepared by</b> &nbsp;Continental Insurance Lanka Ltd. — Medical Claims Department</div>
+  <div style="margin-top:4px;"><b>Developed by</b> &nbsp;Nevinda Rushantha, Assistant Manager – Medical Claims (Data Analyst)</div>
+  <div style="margin-top:4px;">© 2026 Continental Insurance Lanka Ltd.</div>
+</div>
+
+<!-- FILTER BAR -->
+<div class="fbar">
+  <span class="flbl">🔍 Filter by Class:</span>
+  <button class="fbtn active" onclick="setFilter('Total')">All Classes (Total)</button>
+  <button class="fbtn" onclick="setFilter('Fire & Engineering')">Fire &amp; Engineering</button>
+  <button class="fbtn" onclick="setFilter('Marine')">Marine</button>
+  <button class="fbtn" onclick="setFilter('Medical')">Medical</button>
+  <button class="fbtn" onclick="setFilter('Gen Accident & Misc')">Gen Accident &amp; Misc</button>
+  <button class="fbtn" onclick="setFilter('Motor')">Motor</button>
+</div>
+
+<script>
+Chart.register(ChartDataLabels);
+Chart.defaults.font.family="'Times New Roman', Times, serif";
+Chart.defaults.color='#1e2d42';
+Chart.defaults.plugins.tooltip.titleFont={family:"'Times New Roman', Times, serif",size:15,weight:'bold'};
+Chart.defaults.plugins.tooltip.bodyFont={family:"'Times New Roman', Times, serif",size:14};
+Chart.defaults.plugins.tooltip.padding=10;
+Chart.defaults.plugins.legend.labels.font={family:"'Times New Roman', Times, serif",size:14};
+
+// ─── LABEL / AXIS HELPERS ─────────────────────────────────────────────────────
+// Wraps a two-word company/entity name onto two lines so long x-axis labels
+// don't overlap when rotated.
+function wrapLabel(name){
+  const words=String(name).split(' ');
+  if(words.length<2) return name;
+  const mid=Math.ceil(words.length/2);
+  return [words.slice(0,mid).join(' '), words.slice(mid).join(' ')];
+}
+function wrapLabels(arr){ return arr.map(wrapLabel); }
+
+// Executive-friendly axis formatter: Rs. 2 Bn / Rs. 4 Bn style, no raw LKR digits.
+function fmtAxisMoney(vMn){
+  if(vMn===null||vMn===undefined||isNaN(vMn)) return '';
+  const actual=vMn*1e6;
+  const abs=Math.abs(actual);
+  const sign=actual<0?'-':'';
+  if(abs>=1e9) return `${sign}Rs. ${(abs/1e9).toFixed(abs/1e9<10?1:0)} Bn`;
+  if(abs>=1e6) return `${sign}Rs. ${(abs/1e6).toFixed(0)} Mn`;
+  if(abs>=1e3) return `${sign}Rs. ${(abs/1e3).toFixed(0)} K`;
+  return `${sign}Rs. ${abs.toFixed(0)}`;
+}
+
+// Adaptive bar-value datalabel: sits INSIDE the bar (near the top, white text)
+// when the bar is tall enough to fit the label; otherwise sits ABOVE the bar.
+// Rotates vertical automatically when the bar column is too narrow for
+// a horizontal label, preventing overlap between neighbouring bars.
+function adaptiveDL(outsideColor, formatter, insideColor){
+  insideColor=insideColor||'#ffffff';
+  function meta(ctx){ try{ return ctx.chart.getDatasetMeta(ctx.datasetIndex).data[ctx.dataIndex]; }catch(e){ return null; } }
+  return {
+    anchor:(ctx)=>{ const m=meta(ctx); return (m && Math.abs(m.height)>30) ? 'end' : 'end'; },
+    align:(ctx)=>{ const m=meta(ctx); return (m && Math.abs(m.height)>30) ? 'start' : 'top'; },
+    color:(ctx)=>{
+      const m=meta(ctx);
+      const inside = m && Math.abs(m.height)>30;
+      const oc = typeof outsideColor==='function' ? outsideColor(ctx) : outsideColor;
+      return inside ? insideColor : oc;
+    },
+    rotation:(ctx)=>{ const m=meta(ctx); return (m && Math.abs(m.width)<24) ? -90 : 0; },
+    font:{size:12,weight:'bold'},
+    formatter,
+    clamp:true,
+    clip:false
+  };
+}
+// Adaptive percentage datalabel for Claim Ratio charts — same overlap logic,
+// formatted as a percentage instead of a monetary value.
+function adaptivePctDL(outsideColor, dataArr){
+  return adaptiveDL(outsideColor, v=>v===null||v===undefined||isNaN(v)?'N/A':v.toFixed(1)+'%');
+}
+// Extra spacing between company groups (~12% more) without touching layout/colors.
+const BAR_SPACING={categoryPercentage:0.72,barPercentage:0.86};
+
+// ─── RAW DATA ───────────────────────────────────────────────────────────────
+const COMPANIES = ['Allianz General','Amana General','Ceylinco Insurance','Continental Insurance','Co-op Insurance','Fairfirst Insurance','HNB General','LOLC General','MBSL Insurance','Orient Insurance',"People's Insurance",'Sanasa General','SLIC General'];
+const CONT = 3; // Continental index
+
+const GWP = {
+  'Total':{
+    y25:[8514.00,2771.00,13374.00,6622.00,2387.37,6745.00,5666.00,6716.00,257.00,2314.00,3753.00,1544.00,13048.00],
+    y26:[8993.02,1924.65,15365.87,6250.49,2559.91,9123.00,6033.83,9390.82,296.00,3352.73,5207.84,1908.93,18124.00]
+  },
+  'Fire & Engineering':{
+    y25:[2149.00,282.00,3462.00,1654.00,197.00,1911.00,1562.00,1234.00,55.00,314.00,535.00,45.00,1371.00],
+    y26:[1993.15,215.43,3876.82,1377.05,222.23,2941.00,1543.56,1779.30,45.00,551.18,659.03,84.44,1901.00]
+  },
+  'Marine':{
+    y25:[194.00,259.00,660.00,39.00,25.00,625.00,121.00,77.00,0.00,6.00,36.00,1.00,562.00],
+    y26:[174.54,148.41,744.81,104.06,41.09,739.00,158.27,97.65,0.00,11.77,13.30,0.52,548.00]
+  },
+  'Medical':{
+    y25:[1354.00,567.00,1450.00,2286.00,192.00,457.00,895.00,74.00,7.00,299.00,38.00,136.00,1589.00],
+    y26:[816.95,420.92,1574.92,1325.66,243.67,477.00,546.62,171.98,6.00,608.61,45.13,66.57,2351.00]
+  },
+  'Gen Accident & Misc':{
+    y25:[535.00,112.00,1331.00,587.00,252.00,928.00,515.00,353.00,27.00,150.00,236.00,81.00,1971.00],
+    y26:[627.90,45.83,1097.92,791.27,244.92,1065.00,496.39,445.06,41.00,152.53,443.20,127.95,2045.00]
+  },
+  'Motor':{
+    y25:[4282.00,1551.00,6471.00,2056.00,1721.37,2824.00,2573.00,4978.00,168.00,1545.00,2908.00,1281.00,7555.00],
+    y26:[5380.47,1094.06,8071.40,2652.46,1808.00,3901.00,3288.98,6896.83,204.00,2028.63,4047.18,1629.46,11279.00]
+  },
+  'Non-Motor Total':{
+    y25:[4232.00,1220.00,6903.00,4566.00,666.00,3921.00,3093.00,1738.00,89.00,769.00,845.00,263.00,5493.00],
+    y26:[3612.55,830.59,7294.47,3598.04,751.91,5222.00,2744.85,2494.00,92.00,1324.10,1160.66,279.48,6845.00]
+  }
+};
+
+const NLR = {
+  'Total':{
+    y25:[78.52,69.72,59.00,69.90,74.67,49.60,71.27,69.34,114.00,69.39,63.00,51.00,53.81],
+    y26:[63.70,55.84,59.00,80.00,66.00,62.91,65.78,60.24,119.63,70.38,65.00,49.93,59.77]
+  },
+  'Fire & Engineering':{
+    y25:[77.60,98.23,265.00,10.12,-25.00,21.30,41.49,47.93,59.00,15.73,11.84,67.00,26.05],
+    y26:[30.20,-68.78,249.00,-17.59,72.00,59.53,-36.78,-15.91,-93.32,23.09,13.00,-28.95,-65.96]
+  },
+  'Marine':{
+    y25:[44.73,24.30,38.00,6.79,49.00,35.00,47.57,-3.21,0.00,17.59,-89.25,24.00,17.72],
+    y26:[10.50,-168.92,30.00,1.09,18.00,46.21,-75.15,59.37,41.57,15.83,94.00,0.00,-10.40]
+  },
+  'Medical':{
+    y25:[94.08,80.88,62.00,88.99,145.00,50.50,99.67,88.93,66.00,75.86,46.92,132.00,81.72],
+    y26:[88.50,73.71,59.00,107.35,117.00,54.96,97.19,78.51,20.41,84.24,45.77,184.43,83.59]
+  },
+  'Gen Accident & Misc':{
+    y25:[51.70,11.72,25.00,22.64,23.00,20.00,35.43,60.08,45.00,9.31,23.39,57.00,34.71],
+    y26:[33.90,-2.89,19.00,61.74,60.00,39.01,12.80,30.70,67.98,52.96,8.26,-0.38,43.43]
+  },
+  'Motor':{
+    y25:[79.64,68.39,55.00,58.32,76.00,54.80,61.98,72.60,131.00,73.50,68.11,41.00,48.70],
+    y26:[72.60,60.63,51.00,66.44,63.00,67.60,64.45,69.71,101.95,69.00,71.00,47.77,58.65]
+  }
+};
+
+const MOTOR_RATIO={y25:[50.29,55.97,48.38,31.05,72.10,41.87,45.41,74.12,65.37,66.77,77.48,82.97,57.90],y26:[59.83,56.84,52.53,42.44,70.63,42.76,54.51,73.44,68.92,60.51,77.71,85.36,62.23]};
+
+const MKT_SHARE={y25:[11.55,3.76,18.14,8.98,3.24,9.15,7.69,9.11,0.35,3.14,5.09,2.09,17.70],y26:[10.16,2.17,17.36,7.06,2.89,10.30,6.82,10.61,0.33,3.79,5.88,2.16,20.47]};
+const MKT_RANK={y25:[3,9,1,6,10,4,7,5,13,11,8,12,2],y26:[5,11,2,6,10,4,7,3,13,9,8,12,1]};
+
+// ─── HELPERS ────────────────────────────────────────────────────────────────
+// Values are stored in LKR millions. These helpers auto-scale to K / Mn / Bn
+// and always prefix monetary figures with "Rs." per the standard house format.
+function toActual(vMn){ return vMn*1e6; }
+function fmtMoney(vMn){
+  if(vMn===null||vMn===undefined||isNaN(vMn)) return 'N/A';
+  const actual=toActual(vMn);
+  const abs=Math.abs(actual);
+  const sign=actual<0?'-':'';
+  if(abs>=1e9) return `${sign}Rs. ${(abs/1e9).toFixed(2)} Bn`;
+  if(abs>=1e6) return `${sign}Rs. ${(abs/1e6).toFixed(2)} Mn`;
+  if(abs>=1e3) return `${sign}Rs. ${(abs/1e3).toFixed(2)} K`;
+  return `${sign}Rs. ${abs.toFixed(2)}`;
+}
+function fmtMoneyFull(vMn){
+  if(vMn===null||vMn===undefined||isNaN(vMn)) return 'N/A';
+  const actual=toActual(vMn);
+  const sign=actual<0?'-':'';
+  return `${sign}Rs. ${Math.abs(actual).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}`;
+}
+function nf(v){ return fmtMoney(v); }
+const fmtN=(v)=>nf(v);
+const fmtFull=(v)=>fmtMoneyFull(v);
+const fmt=(v,d=1)=>v===null||isNaN(v)?'N/A':Math.abs(v)>=1000?(v/1000).toFixed(2)+'K':v.toFixed(d);
+const pct=(v)=>v===null||isNaN(v)?'N/A':v.toFixed(1)+'%';
+const gPct=(a,b)=>a&&a!==0?((b-a)/Math.abs(a)*100).toFixed(1)+'%':null;
+const cap=(v,lo=-300,hi=300)=>v===null?null:Math.max(lo,Math.min(hi,v));
+
+function barBg(idx, isY26) {
+  if(idx===CONT) return isY26?'#f5a623':'#c47d0a';
+  return isY26?'#1d6fdb':'#3b5a8f';
+}
+
+const CHART_DEFAULTS={responsive:true,maintainAspectRatio:false,animation:{duration:500},plugins:{legend:{display:false},tooltip:{callbacks:{label:(c)=>` ${c.dataset.label}: ${fmtFull(c.raw)}`}}},scales:{x:{grid:{color:'rgba(0,0,0,.06)'},ticks:{color:'#64748b',font:{size:13}}},y:{grid:{color:'rgba(0,0,0,.07)'},ticks:{color:'#64748b',font:{size:13}}}}};
+
+// ─── STATE ──────────────────────────────────────────────────────────────────
+let activeClass='Total';
+let activeTab=0;
+const CHARTS={};
+
+// ─── CHART FACTORY ──────────────────────────────────────────────────────────
+function makeBar(id, labels, ds, opts={}) {
+  const ctx=document.getElementById(id);
+  if(!ctx) return null;
+  if(CHARTS[id]) CHARTS[id].destroy();
+  const cfg=JSON.parse(JSON.stringify(CHART_DEFAULTS));
+  Object.assign(cfg,{type:'bar',data:{labels,datasets:ds}});
+  cfg.plugins=cfg.plugins||{};
+  Object.assign(cfg.plugins,opts.plugins||{});
+  if(opts.scales) Object.assign(cfg.scales,opts.scales);
+  if(opts.extra) Object.assign(cfg,opts.extra);
+  CHARTS[id]=new Chart(ctx,cfg);
+  return CHARTS[id];
+}
+
+function makeHBar(id, labels, ds, opts={}) {
+  const ctx=document.getElementById(id);
+  if(!ctx) return null;
+  if(CHARTS[id]) CHARTS[id].destroy();
+  CHARTS[id]=new Chart(ctx,{
+    type:'bar',
+    data:{labels,datasets:ds},
+    options:{
+      indexAxis:'y',
+      responsive:true,
+      maintainAspectRatio:false,
+      animation:{duration:500},
+      plugins:{
+        legend:{display:false},
+        datalabels:{display:true,color:'#fff',font:{size:11.5,weight:'bold'},formatter:(v)=>v!==null&&!isNaN(v)?v.toFixed(1)+'%':v,anchor:'end',align:'right',clamp:true},
+        tooltip:{callbacks:{label:(c)=>` ${c.dataset.label}: ${c.raw.toFixed(2)}%`}},
+        ...(opts.plugins||{})
+      },
+      scales:{
+        x:{grid:{color:'rgba(0,0,0,.06)'},ticks:{color:'#64748b',font:{size:13}}},
+        y:{grid:{display:false},ticks:{color:'#1e2d42',font:{size:13}}},
+        ...(opts.scales||{})
+      }
+    }
+  });
+  return CHARTS[id];
+}
+
+// ─── GWP CHART ──────────────────────────────────────────────────────────────
+function buildGwpChart(cls) {
+  const d=GWP[cls];
+  const bg25=COMPANIES.map((_,i)=>barBg(i,false));
+  const bg26=COMPANIES.map((_,i)=>barBg(i,true));
+  const ds=[
+    {label:'Q2 2025',data:d.y25,backgroundColor:bg25,borderRadius:3,...BAR_SPACING,datalabels:{...adaptiveDL('#475569',(v)=>nf(v)),display:(ctx)=>ctx.dataset.data[ctx.dataIndex]>0}},
+    {label:'Q2 2026',data:d.y26,backgroundColor:bg26,borderRadius:3,...BAR_SPACING,datalabels:{...adaptiveDL('#1e2d42',(v)=>nf(v)),display:(ctx)=>ctx.dataset.data[ctx.dataIndex]>0}}
+  ];
+  if(CHARTS.gwpChart){
+    CHARTS.gwpChart.data.datasets[0].data=d.y25;
+    CHARTS.gwpChart.data.datasets[1].data=d.y26;
+    CHARTS.gwpChart.update();
+    return;
+  }
+  const ctx=document.getElementById('gwpChart');
+  CHARTS.gwpChart=new Chart(ctx,{
+    type:'bar',
+    data:{labels:wrapLabels(COMPANIES),datasets:ds},
+    options:{
+      responsive:true,maintainAspectRatio:false,animation:{duration:500},
+      interaction:{mode:'index',intersect:false},
+      plugins:{legend:{display:false},datalabels:{},tooltip:{callbacks:{
+        title:(items)=>COMPANIES[items[0].dataIndex],
+        label:(c)=>` ${c.dataset.label} GWP: ${fmtFull(c.raw)}`,
+        afterBody:(items)=>{
+          const i=items[0].dataIndex;
+          const g=d.y25[i]?(((d.y26[i]-d.y25[i])/Math.abs(d.y25[i]))*100).toFixed(1):'N/A';
+          const tot26=d.y26.reduce((a,b)=>a+b,0);
+          const share=(d.y26[i]/tot26*100).toFixed(2);
+          return [`Growth: ${g}%`,`Market Share (2Q 2026): ${share}%`];
+        }
+      }}},
+      scales:{
+        x:{grid:{color:'rgba(0,0,0,.05)'},ticks:{color:'#64748b',font:{size:13},maxRotation:45,minRotation:35,autoSkip:false}},
+        y:{grid:{color:'rgba(0,0,0,.06)'},ticks:{color:'#64748b',font:{size:14},callback:(v)=>fmtAxisMoney(v)},title:{display:true,text:'GWP (LKR)',color:'#64748b',font:{size:14}}}
+      }
+    }
+  });
+}
+
+// ─── GWP TABLE ──────────────────────────────────────────────────────────────
+function buildGwpTable(cls) {
+  const d=GWP[cls];
+  const totY25=d.y25.reduce((a,b)=>a+b,0);
+  const totY26=d.y26.reduce((a,b)=>a+b,0);
+  let html=`<table><thead><tr><th>Company</th><th>Q2 2025</th><th>Q2 2026</th><th>Growth %</th><th>Share 2025</th><th>Share 2026</th></tr></thead><tbody>`;
+  const sorted=[...COMPANIES.keys()].sort((a,b)=>d.y26[b]-d.y26[a]);
+  sorted.forEach(i=>{
+    const g=gPct(d.y25[i],d.y26[i]);
+    const gNum=d.y25[i]?((d.y26[i]-d.y25[i])/Math.abs(d.y25[i])*100):0;
+    const gCls=gNum>0?'up2':'dn2';
+    const gArrow=gNum>0?'▲':'▼';
+    const s25=(d.y25[i]/totY25*100).toFixed(1)+'%';
+    const s26=(d.y26[i]/totY26*100).toFixed(1)+'%';
+    html+=`<tr class="${i===CONT?'cont':''}"><td>${COMPANIES[i]}</td><td title="${fmtFull(d.y25[i])}">${fmtN(d.y25[i])}</td><td title="${fmtFull(d.y26[i])}">${fmtN(d.y26[i])}</td><td class="${gCls}">${gArrow} ${Math.abs(gNum).toFixed(1)}%</td><td>${s25}</td><td>${s26}</td></tr>`;
+  });
+  html+=`<tr class="tot-row"><td>TOTAL INDUSTRY</td><td title="${fmtFull(totY25)}">${fmtN(totY25)}</td><td title="${fmtFull(totY26)}">${fmtN(totY26)}</td><td class="up2">▲ ${((totY26-totY25)/totY25*100).toFixed(1)}%</td><td>100.0%</td><td>100.0%</td></tr>`;
+  html+=`</tbody></table>`;
+  document.getElementById('gwpTable').innerHTML=html;
+}
+
+// ─── MOTOR/NM CHARTS (STATIC) ───────────────────────────────────────────────
+function buildMotorCharts() {
+  const nm=GWP['Non-Motor Total'], mt=GWP['Motor'];
+  const bg25=COMPANIES.map((_,i)=>barBg(i,false));
+  const bgNM26=COMPANIES.map((_,i)=>i===CONT?'#f5a623':'#0d9488');
+  const bgM26=COMPANIES.map((_,i)=>i===CONT?'#f5a623':'#6366f1');
+
+  ['nmChart','mChart'].forEach(id=>{if(CHARTS[id])CHARTS[id].destroy();});
+
+  const ctx1=document.getElementById('nmChart');
+  CHARTS.nmChart=new Chart(ctx1,{type:'bar',data:{labels:wrapLabels(COMPANIES),datasets:[
+    {label:'Q2 2025',data:nm.y25,backgroundColor:bg25,borderRadius:3,...BAR_SPACING,datalabels:{...adaptiveDL('#475569',(v)=>nf(v)),display:ctx=>ctx.dataset.data[ctx.dataIndex]>0}},
+    {label:'Q2 2026',data:nm.y26,backgroundColor:bgNM26,borderRadius:3,...BAR_SPACING,datalabels:{...adaptiveDL('#1e2d42',(v)=>nf(v)),display:ctx=>ctx.dataset.data[ctx.dataIndex]>0}}
+  ]},options:{responsive:true,maintainAspectRatio:false,animation:{duration:500},plugins:{legend:{display:false},datalabels:{},tooltip:{callbacks:{label:(c)=>` ${c.dataset.label}: ${fmtFull(c.raw)}`}}}},scales:{x:{grid:{display:false},ticks:{color:'#64748b',font:{size:12},maxRotation:45,minRotation:35}},y:{grid:{color:'rgba(0,0,0,.06)'},ticks:{color:'#64748b',font:{size:13},callback:(v)=>fmtAxisMoney(v)}}}});
+
+  const ctx2=document.getElementById('mChart');
+  CHARTS.mChart=new Chart(ctx2,{type:'bar',data:{labels:wrapLabels(COMPANIES),datasets:[
+    {label:'Q2 2025',data:mt.y25,backgroundColor:bg25,borderRadius:3,...BAR_SPACING,datalabels:{...adaptiveDL('#475569',(v)=>nf(v)),display:ctx=>ctx.dataset.data[ctx.dataIndex]>0}},
+    {label:'Q2 2026',data:mt.y26,backgroundColor:bgM26,borderRadius:3,...BAR_SPACING,datalabels:{...adaptiveDL('#1e2d42',(v)=>nf(v)),display:ctx=>ctx.dataset.data[ctx.dataIndex]>0}}
+  ]},options:{responsive:true,maintainAspectRatio:false,animation:{duration:500},plugins:{legend:{display:false},datalabels:{},tooltip:{callbacks:{label:(c)=>` ${c.dataset.label}: ${fmtFull(c.raw)}`}}}},scales:{x:{grid:{display:false},ticks:{color:'#64748b',font:{size:12},maxRotation:45,minRotation:35}},y:{grid:{color:'rgba(0,0,0,.06)'},ticks:{color:'#64748b',font:{size:13},callback:(v)=>fmtAxisMoney(v)}}}});
+}
+
+// ─── MOTOR TABLE ─────────────────────────────────────────────────────────────
+function buildMotorTable() {
+  let html='';
+  COMPANIES.forEach((c,i)=>{
+    const nm25=GWP['Non-Motor Total'].y25[i], nm26=GWP['Non-Motor Total'].y26[i];
+    const m25=GWP['Motor'].y25[i], m26=GWP['Motor'].y26[i];
+    const nmG=((nm26-nm25)/Math.abs(nm25)*100).toFixed(1);
+    const mG=((m26-m25)/Math.abs(m25)*100).toFixed(1);
+    html+=`<tr class="${i===CONT?'cont':''}">
+      <td>${c}</td><td title="${fmtFull(nm25)}">${fmtN(nm25)}</td><td title="${fmtFull(nm26)}">${fmtN(nm26)}</td>
+      <td class="${nmG>0?'up2':'dn2'}">${nmG>0?'▲':'▼'} ${Math.abs(nmG)}%</td>
+      <td title="${fmtFull(m25)}">${fmtN(m25)}</td><td title="${fmtFull(m26)}">${fmtN(m26)}</td>
+      <td class="${mG>0?'up2':'dn2'}">${mG>0?'▲':'▼'} ${Math.abs(mG)}%</td>
+      <td>${MOTOR_RATIO.y25[i].toFixed(1)}%</td><td>${MOTOR_RATIO.y26[i].toFixed(1)}%</td>
+    </tr>`;
+  });
+  document.getElementById('motorTableBody').innerHTML=html;
+}
+
+// ─── MARKET SHARE ────────────────────────────────────────────────────────────
+function buildMktShare(cls) {
+  let sh25, sh26;
+  if(cls==='Total'){sh25=[...MKT_SHARE.y25];sh26=[...MKT_SHARE.y26];}
+  else {
+    const d=GWP[cls];
+    const t25=d.y25.reduce((a,b)=>a+(b||0),0);
+    const t26=d.y26.reduce((a,b)=>a+(b||0),0);
+    sh25=d.y25.map(v=>+(v/t25*100).toFixed(2));
+    sh26=d.y26.map(v=>+(v/t26*100).toFixed(2));
+  }
+  const sorted=[...COMPANIES.keys()].sort((a,b)=>sh26[b]-sh26[a]);
+  const lbls=sorted.map(i=>COMPANIES[i]);
+  const s25s=sorted.map(i=>sh25[i]);
+  const s26s=sorted.map(i=>sh26[i]);
+  const bg25s=sorted.map(i=>i===CONT?'#c47d0a':'#3b5a8f');
+  const bg26s=sorted.map(i=>i===CONT?'#f5a623':'#1d6fdb');
+
+  const hBarOpts={responsive:true,maintainAspectRatio:false,animation:{duration:500},indexAxis:'y',plugins:{legend:{display:false},datalabels:{display:true,color:'#fff',font:{size:13,weight:'bold'},formatter:v=>v.toFixed(1)+'%',anchor:'end',align:'right',clamp:true},tooltip:{callbacks:{label:(c)=>` ${c.dataset.label}: ${c.raw.toFixed(2)}%`}}},scales:{x:{grid:{color:'rgba(0,0,0,.06)'},ticks:{color:'#64748b',font:{size:14},callback:v=>v+'%'},max:Math.max(...sh26)+5},y:{grid:{display:false},ticks:{color:'#1e2d42',font:{size:14}}}}};
+
+  ['ms25Chart','ms26Chart'].forEach(id=>{if(CHARTS[id])CHARTS[id].destroy();});
+
+  const ctx25=document.getElementById('ms25Chart');
+  CHARTS.ms25Chart=new Chart(ctx25,{type:'bar',data:{labels:lbls,datasets:[{label:'Q2 2025 Share',data:s25s,backgroundColor:bg25s,borderRadius:3}]},options:JSON.parse(JSON.stringify(hBarOpts))});
+
+  const ctx26=document.getElementById('ms26Chart');
+  CHARTS.ms26Chart=new Chart(ctx26,{type:'bar',data:{labels:lbls,datasets:[{label:'Q2 2026 Share',data:s26s,backgroundColor:bg26s,borderRadius:3}]},options:JSON.parse(JSON.stringify(hBarOpts))});
+
+  // Table
+  let html=`<table><thead><tr><th>Company</th><th>Share Q2 2025</th><th>Share Q2 2026</th><th>Change (pp)</th></tr></thead><tbody>`;
+  sorted.forEach(i=>{
+    const chg=(sh26[i]-sh25[i]).toFixed(2);
+    const cls2=chg>0?'up2':'dn2';
+    const arrow=chg>0?'▲':'▼';
+    html+=`<tr class="${i===CONT?'cont':''}"><td>${COMPANIES[i]}</td><td>${sh25[i].toFixed(2)}%</td><td>${sh26[i].toFixed(2)}%</td><td class="${cls2}">${arrow} ${Math.abs(chg)} pp</td></tr>`;
+  });
+  html+=`</tbody></table>`;
+  document.getElementById('mktShareTable').innerHTML=html;
+  document.getElementById('mktShareTitle').textContent=`Market Share – ${cls==='Total'?'Total GWP':cls}`;
+}
+
+// ─── MARKET RANK ─────────────────────────────────────────────────────────────
+function buildRankTable(cls) {
+  let r25,r26;
+  if(cls==='Total'){r25=[...MKT_RANK.y25];r26=[...MKT_RANK.y26];}
+  else{
+    const d=GWP[cls];
+    const idx=[...COMPANIES.keys()];
+    const sorted25=[...idx].sort((a,b)=>d.y25[b]-d.y25[a]);
+    const sorted26=[...idx].sort((a,b)=>d.y26[b]-d.y26[a]);
+    r25=new Array(13);r26=new Array(13);
+    sorted25.forEach((ci,rank)=>{r25[ci]=rank+1;});
+    sorted26.forEach((ci,rank)=>{r26[ci]=rank+1;});
+  }
+  const rankSorted=[...COMPANIES.keys()].sort((a,b)=>r26[a]-r26[b]);
+  function rBadge(r){const c=r===1?'rank-1':r===2?'rank-2':r===3?'rank-3':'';return`<span class="rank-num ${c}">${r}</span>`;}
+  let html=`<table class="rank-tbl"><thead><tr><th>Company</th><th>Rank Q2 2025</th><th>Rank Q2 2026</th><th>Movement</th><th>GWP Q2 2025 (Mn)</th><th>GWP Q2 2026 (Mn)</th><th>Growth</th></tr></thead><tbody>`;
+  rankSorted.forEach(i=>{
+    const mv=r25[i]-r26[i];
+    const mvTxt=mv>0?`<span class="mov-up">↑${mv}</span>`:mv<0?`<span class="mov-dn">↓${Math.abs(mv)}</span>`:`<span class="mov-nt">—</span>`;
+    const d=GWP[cls];
+    const gn=((d.y26[i]-d.y25[i])/Math.abs(d.y25[i])*100).toFixed(1);
+    const gc=gn>0?'up2':'dn2';
+    html+=`<tr class="${i===CONT?'cont':''}"><td>${COMPANIES[i]}</td><td>${rBadge(r25[i])}</td><td>${rBadge(r26[i])}</td><td>${mvTxt}</td><td title="${fmtFull(d.y25[i])}">${fmtN(d.y25[i])}</td><td title="${fmtFull(d.y26[i])}">${fmtN(d.y26[i])}</td><td class="${gc}">${gn>0?'▲':'▼'} ${Math.abs(gn)}%</td></tr>`;
+  });
+  html+=`</tbody></table>`;
+  document.getElementById('rankTableWrap').innerHTML=html;
+  document.getElementById('rankTitle').textContent=`Market Rank – By ${cls==='Total'?'Total GWP':cls+' GWP'}`;
+}
+
+// ─── NLR CHART ───────────────────────────────────────────────────────────────
+function buildNlrChart(cls) {
+  const d=NLR[cls];
+  document.getElementById('nlrChartTitle').textContent=`Net Claim Ratio – All Companies (${cls})`;
+
+  const cappedY25=d.y25.map(v=>cap(v));
+  const cappedY26=d.y26.map(v=>cap(v));
+  const bg25=COMPANIES.map((_,i)=>barBg(i,false));
+  const bg26=COMPANIES.map((_,i)=>barBg(i,true));
+
+  if(CHARTS.nlrChart){
+    CHARTS.nlrChart.data.datasets[0].data=cappedY25;
+    CHARTS.nlrChart.data.datasets[1].data=cappedY26;
+    CHARTS.nlrChart.update();
+    buildNlrTable(cls);
+    return;
+  }
+
+  const ctx=document.getElementById('nlrChart');
+  CHARTS.nlrChart=new Chart(ctx,{
+    type:'bar',
+    data:{labels:wrapLabels(COMPANIES),datasets:[
+      {label:'Q2 2025',data:cappedY25,backgroundColor:bg25,borderRadius:3,...BAR_SPACING,datalabels:{...adaptiveDL('#475569',v=>v===null?'N/A':v.toFixed(1)+'%'),display:ctx=>ctx.dataset.data[ctx.dataIndex]!==null}},
+      {label:'Q2 2026',data:cappedY26,backgroundColor:bg26,borderRadius:3,...BAR_SPACING,datalabels:{...adaptiveDL('#1e2d42',v=>v===null?'N/A':v.toFixed(1)+'%'),display:ctx=>ctx.dataset.data[ctx.dataIndex]!==null}}
+    ]},
+    options:{
+      responsive:true,maintainAspectRatio:false,animation:{duration:500},
+      interaction:{mode:'index',intersect:false},
+      plugins:{
+        legend:{display:false},
+        datalabels:{},
+        annotation:{},
+        tooltip:{callbacks:{
+          title:(items)=>COMPANIES[items[0].dataIndex],
+          label:(c)=>` ${c.dataset.label} NCR: ${c.raw!==null?c.raw.toFixed(1)+'%':'N/A'}`,
+          afterBody:(items)=>{
+            const i=items[0].dataIndex;
+            const v25=d.y25[i],v26=d.y26[i];
+            if(v25===null||v26===null) return [];
+            return [`Movement: ${(v26-v25>0?'▲ +':'▼ ')}${Math.abs((v26-v25)).toFixed(1)} pp`];
+          }
+        }}
+      },
+      scales:{
+        x:{grid:{color:'rgba(0,0,0,.05)'},ticks:{color:'#64748b',font:{size:13},maxRotation:45,minRotation:35,autoSkip:false}},
+        y:{grid:{color:'rgba(0,0,0,.07)'},ticks:{color:'#64748b',font:{size:14},callback:v=>v+'%'},
+          afterDataLimits:(axis)=>{axis.max=Math.max(axis.max,120);}}
+      }
+    },
+    plugins:[{id:'refLine100',afterDraw(chart){
+      const {ctx,chartArea,scales:{y}}=chart;
+      if(!y||!y.getPixelForValue) return;
+      const py=y.getPixelForValue(100);
+      if(py<chartArea.top||py>chartArea.bottom) return;
+      ctx.save();ctx.beginPath();
+      ctx.setLineDash([6,4]);ctx.strokeStyle='#f43f5e';ctx.lineWidth=1.5;
+      ctx.moveTo(chartArea.left,py);ctx.lineTo(chartArea.right,py);
+      ctx.stroke();
+      ctx.fillStyle='#f43f5e';ctx.font='bold 11px "Times New Roman"';ctx.fillText('100% Threshold',chartArea.right-125,py-6);
+      ctx.restore();
+    }}]
+  });
+  buildNlrTable(cls);
+}
+
+// ─── NLR TABLE ───────────────────────────────────────────────────────────────
+function buildNlrTable(cls) {
+  const d=NLR[cls];
+  function nlrCls(v){return v===null?'nt2':v<70?'nlr-good':v<100?'nlr-warn':'nlr-bad';}
+  let html=`<table><thead><tr><th>Company</th><th>NCR Q2 2025</th><th>NCR Q2 2026</th><th>Movement (pp)</th><th>Status 2026</th></tr></thead><tbody>`;
+  COMPANIES.forEach((c,i)=>{
+    const v25=d.y25[i], v26=d.y26[i];
+    const mv=v25!==null&&v26!==null?(v26-v25).toFixed(1):null;
+    const status=v26===null?'N/A':v26<70?'✅ Good':v26<100?'⚠ Caution':'❌ Loss';
+    const mvCls=mv===null?'nt2':mv>0?'dn2':'up2';
+    html+=`<tr class="${i===CONT?'cont':''}"><td>${c}</td>
+      <td class="${nlrCls(v25)}">${v25===null?'N/A':v25.toFixed(1)+'%'}</td>
+      <td class="${nlrCls(v26)}">${v26===null?'N/A':v26.toFixed(1)+'%'}</td>
+      <td class="${mvCls}">${mv===null?'N/A':(mv>0?'▲ +':mv<0?'▼ ':'')+Math.abs(mv)+' pp'}</td>
+      <td>${status}</td></tr>`;
+  });
+  html+=`</tbody></table>`;
+  document.getElementById('nlrTable').innerHTML=html;
+}
+
+// ─── CONTINENTAL CHARTS ──────────────────────────────────────────────────────
+function buildContCharts(cls) {
+  cls = cls || 'Total';
+  const classes=['Fire & Engineering','Marine','Medical','Gen Accident & Misc','Motor'];
+  const labels=['F&E','Marine','Medical','Gen Acc','Motor'];
+  const contY25=classes.map(c=>GWP[c].y25[CONT]);
+  const contY26=classes.map(c=>GWP[c].y26[CONT]);
+
+  if(CHARTS.contGwpChart) CHARTS.contGwpChart.destroy();
+  CHARTS.contGwpChart=new Chart(document.getElementById('contGwpChart'),{
+    type:'bar',
+    data:{labels,datasets:[
+      {label:'Q2 2025',data:contY25,backgroundColor:'#c47d0a',borderRadius:4,...BAR_SPACING,datalabels:adaptiveDL('#c47d0a',v=>fmtN(v))},
+      {label:'Q2 2026',data:contY26,backgroundColor:'#f5a623',borderRadius:4,...BAR_SPACING,datalabels:adaptiveDL('#b45309',v=>fmtN(v))}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,animation:{duration:500},plugins:{legend:{display:false},datalabels:{},tooltip:{callbacks:{label:(c)=>` ${c.dataset.label}: ${fmtFull(c.raw)}`}}},scales:{x:{grid:{display:false},ticks:{color:'#64748b',font:{size:14}}},y:{grid:{color:'rgba(0,0,0,.07)'},ticks:{color:'#64748b',font:{size:13},callback:(v)=>fmtAxisMoney(v)},title:{display:true,text:'GWP (LKR)',color:'#64748b',font:{size:13}}}}}
+  });
+
+  // Mix donut — computed live from Continental's Q2 2026 GWP by class
+  const total26=contY26.reduce((a,b)=>a+b,0);
+  const mixData=contY26.map(v=>+(v/total26*100).toFixed(1));
+  const mixLabels=labels;
+  if(CHARTS.contMixChart) CHARTS.contMixChart.destroy();
+  CHARTS.contMixChart=new Chart(document.getElementById('contMixChart'),{
+    type:'doughnut',
+    data:{labels:mixLabels,datasets:[{data:mixData,backgroundColor:['#1d6fdb','#0d9488','#8b5cf6','#f97316','#f5a623'],borderWidth:0,hoverOffset:8}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'58%',layout:{padding:{right:4}},plugins:{legend:{position:'right',align:'center',labels:{color:'#1e2d42',font:{size:16},padding:8,boxWidth:16}},datalabels:{display:true,color:'#fff',font:{size:16,weight:'bold'},formatter:v=>v+'%',textStrokeColor:'#000',textStrokeWidth:2},tooltip:{callbacks:{label:(c)=>`${c.label}: ${c.raw}%`}}}}
+  });
+
+  // VS Industry — respects the selected class filter
+  const vsD=GWP[cls];
+  const vsSorted=[...COMPANIES.keys()].sort((a,b)=>vsD.y26[b]-vsD.y26[a]);
+  const vsLabels=wrapLabels(vsSorted.map(i=>COMPANIES[i].replace(' Insurance','').replace(' General','')));
+  const vsData=vsSorted.map(i=>vsD.y26[i]);
+  const vsBg=vsSorted.map(i=>i===CONT?'#f5a623':'#1e3a5c');
+  if(CHARTS.vsIndustryChart) CHARTS.vsIndustryChart.destroy();
+  CHARTS.vsIndustryChart=new Chart(document.getElementById('vsIndustryChart'),{
+    type:'bar',
+    data:{labels:vsLabels,datasets:[{label:'GWP Q2 2026',data:vsData,backgroundColor:vsBg,borderRadius:3,...BAR_SPACING,datalabels:adaptiveDL((ctx)=>vsSorted[ctx.dataIndex]===CONT?'#f5a623':'#8296b0',(v)=>nf(v))}]},
+    options:{responsive:true,maintainAspectRatio:false,animation:{duration:500},plugins:{legend:{display:false},datalabels:{},tooltip:{callbacks:{
+      title:(items)=>COMPANIES[vsSorted[items[0].dataIndex]],
+      label:(c)=>` ${fmtFull(c.raw)}`,
+      afterBody:(items)=>{
+        const i=vsSorted[items[0].dataIndex];
+        const tot=vsD.y26.reduce((a,b)=>a+b,0);
+        const share=(vsD.y26[i]/tot*100).toFixed(2);
+        const g=vsD.y25[i]?(((vsD.y26[i]-vsD.y25[i])/Math.abs(vsD.y25[i]))*100).toFixed(1):'N/A';
+        return [`Growth: ${g}%`,`Market Share: ${share}%`];
+      }
+    }}},scales:{x:{grid:{display:false},ticks:{color:'#64748b',font:{size:12},maxRotation:45,minRotation:35}},y:{grid:{color:'rgba(0,0,0,.07)'},ticks:{color:'#64748b',font:{size:13},callback:(v)=>fmtAxisMoney(v)}}}}
+  });
+  const vsTitleEl=document.getElementById('vsIndustryTitle');
+  if(vsTitleEl) vsTitleEl.textContent=`GWP Comparison – Continental vs Peers (Q2 2026${cls==='Total'?', All Classes':' – '+cls}, LKR)`;
+
+  // Market trend chart — share computed from the selected class filter
+  let trendSh25,trendSh26;
+  if(cls==='Total'){ trendSh25=[...MKT_SHARE.y25]; trendSh26=[...MKT_SHARE.y26]; }
+  else{
+    const t25=vsD.y25.reduce((a,b)=>a+(b||0),0), t26=vsD.y26.reduce((a,b)=>a+(b||0),0);
+    trendSh25=vsD.y25.map(v=>+(v/t25*100).toFixed(2));
+    trendSh26=vsD.y26.map(v=>+(v/t26*100).toFixed(2));
+  }
+  const trendLabels=wrapLabels(COMPANIES.map(c=>c.replace(' Insurance','').replace(' General','')));
+  const trendBg25=COMPANIES.map((_,i)=>i===CONT?'#c47d0a':'#3b5a8f');
+  const trendBg26=COMPANIES.map((_,i)=>i===CONT?'#f5a623':'#1d6fdb');
+  if(CHARTS.mktTrendChart) CHARTS.mktTrendChart.destroy();
+  CHARTS.mktTrendChart=new Chart(document.getElementById('mktTrendChart'),{
+    type:'bar',
+    data:{labels:trendLabels,datasets:[
+      {label:'Share Q2 2025',data:trendSh25,backgroundColor:trendBg25,borderRadius:2,...BAR_SPACING,datalabels:{display:false}},
+      {label:'Share Q2 2026',data:trendSh26,backgroundColor:trendBg26,borderRadius:2,...BAR_SPACING,datalabels:adaptiveDL((ctx)=>ctx.dataIndex===CONT?'#f5a623':'#6e88a8',v=>v.toFixed(1)+'%')}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,animation:{duration:500},plugins:{legend:{labels:{color:'#64748b',font:{size:13}}},datalabels:{},tooltip:{callbacks:{label:(c)=>` ${c.dataset.label}: ${c.raw.toFixed(2)}%`}}},scales:{x:{grid:{display:false},ticks:{color:'#64748b',font:{size:12},maxRotation:45,minRotation:35}},y:{grid:{color:'rgba(0,0,0,.07)'},ticks:{color:'#64748b',font:{size:13},callback:v=>v+'%'},title:{display:true,text:'Market Share %',color:'#64748b',font:{size:13}}}}}
+  });
+  const trendTitleEl=document.getElementById('mktTrendTitle');
+  if(trendTitleEl) trendTitleEl.textContent=`Market Share Trend – Q2 2025 vs Q2 2026${cls==='Total'?'':' ('+cls+')'}`;
+
+  // Continental NLR chart (by class breakdown — always shown in full regardless of filter)
+  const nlrCls=['Fire & Engineering','Marine','Medical','Gen Accident & Misc','Motor','Total'];
+  const nlrLbls=['F&E','Marine','Medical','Gen Acc','Motor','Total'];
+  const contNlr25=nlrCls.map(c=>NLR[c].y25[CONT]);
+  const contNlr26=nlrCls.map(c=>NLR[c].y26[CONT]);
+  if(CHARTS.contNlrChart) CHARTS.contNlrChart.destroy();
+  CHARTS.contNlrChart=new Chart(document.getElementById('contNlrChart'),{
+    type:'bar',
+    data:{labels:nlrLbls,datasets:[
+      {label:'NCR Q2 2025',data:contNlr25,backgroundColor:'#c47d0a',borderRadius:4,...BAR_SPACING,datalabels:{...adaptiveDL('#c47d0a',v=>v===null?'N/A':v.toFixed(1)+'%'),display:ctx=>ctx.dataset.data[ctx.dataIndex]!==null}},
+      {label:'NCR Q2 2026',data:contNlr26,backgroundColor:'#f5a623',borderRadius:4,...BAR_SPACING,datalabels:{...adaptiveDL('#b45309',v=>v===null?'N/A':v.toFixed(1)+'%'),display:ctx=>ctx.dataset.data[ctx.dataIndex]!==null}}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,animation:{duration:500},plugins:{legend:{labels:{color:'#64748b',font:{size:13}}},datalabels:{},tooltip:{callbacks:{label:(c)=>` ${c.dataset.label}: ${c.raw!==null?c.raw.toFixed(1)+'%':'N/A'}`}}},scales:{x:{grid:{display:false},ticks:{color:'#64748b',font:{size:14}}},y:{grid:{color:'rgba(0,0,0,.07)'},ticks:{color:'#64748b',font:{size:13},callback:v=>v+'%'},afterDataLimits:ax=>{ax.max=Math.max(ax.max,120);}}}},
+    plugins:[{id:'refLine',afterDraw(chart){const{ctx,chartArea,scales:{y}}=chart;if(!y)return;const py=y.getPixelForValue(100);if(py<chartArea.top||py>chartArea.bottom)return;ctx.save();ctx.beginPath();ctx.setLineDash([5,4]);ctx.strokeStyle='#f43f5e';ctx.lineWidth=2;ctx.moveTo(chartArea.left,py);ctx.lineTo(chartArea.right,py);ctx.stroke();ctx.restore();}}]
+  });
+}
+
+// ─── CONTINENTAL KPI + INSIGHT UPDATE (driven by class filter) ─────────────
+function buildContKpis(cls) {
+  const d=GWP[cls];
+  const g25=d.y25[CONT], g26=d.y26[CONT];
+  const growth=g25?((g26-g25)/Math.abs(g25)*100):0;
+  const tot25=d.y25.reduce((a,b)=>a+(b||0),0), tot26=d.y26.reduce((a,b)=>a+(b||0),0);
+  const share25=g25/tot25*100, share26=g26/tot26*100;
+  const idx=[...COMPANIES.keys()];
+  const rank26=[...idx].sort((a,b)=>d.y26[b]-d.y26[a]).indexOf(CONT)+1;
+  const rank25=[...idx].sort((a,b)=>d.y25[b]-d.y25[a]).indexOf(CONT)+1;
+  const clsLabel=cls==='Total'?'All Classes':cls;
+
+  document.getElementById('kpiContGwp25Lbl').textContent=`${clsLabel} GWP – 2Q 2025 (Cum.)`;
+  const g25El=document.getElementById('kpiContGwp25'); g25El.textContent=fmtN(g25); g25El.title=fmtFull(g25);
+  document.getElementById('kpiContGwp26Lbl').textContent=`${clsLabel} GWP – 2Q 2026 (Cum.)`;
+  const g26El=document.getElementById('kpiContGwp26'); g26El.textContent=fmtN(g26); g26El.title=fmtFull(g26);
+  g26El.style.color=growth>=0?'var(--green)':'var(--red)';
+  document.getElementById('kpiContGwp26Sub').innerHTML=`${growth>=0?'▲':'▼'} ${Math.abs(growth).toFixed(2)}% YoY ${growth>=0?'Growth':'Decline'}`;
+  document.getElementById('kpiContGwp26Sub').className=`kpi-sub ${growth>=0?'up':'dn'}`;
+
+  document.getElementById('kpiContRankLbl').textContent=`${clsLabel} Rank 2026`;
+  document.getElementById('kpiContRank').textContent=`#${rank26} of ${COMPANIES.length}`;
+  const rankMv=rank25-rank26;
+  document.getElementById('kpiContRankSub').textContent=rankMv>0?`▲ Up from #${rank25} in 2Q 2025`:rankMv<0?`▼ Down from #${rank25} in 2Q 2025`:'Stable – Same as 2025';
+
+  document.getElementById('kpiContShareLbl').textContent=`${clsLabel} Share 2026`;
+  const shEl=document.getElementById('kpiContShare'); shEl.textContent=share26.toFixed(2)+'%'; shEl.style.color=share26>=share25?'var(--green)':'var(--red)';
+  document.getElementById('kpiContShareSub').textContent=`${share26>=share25?'▲':'▼'} from ${share25.toFixed(2)}% in 2Q 2025`;
+  document.getElementById('kpiContShareSub').className=`kpi-sub ${share26>=share25?'up':'dn'}`;
+
+  const insight=document.getElementById('contInsightText');
+  if(insight){
+    if(cls==='Total'){
+      insight.textContent='Medical NCR at 107.4% – underwriting loss. Gen Accident and Motor NCR both worsened alongside a 5.6% decline in total GWP. Overall NCR increased by 10.10 percentage points YoY.';
+    } else {
+      const nlr=NLR[cls];
+      const n25=nlr.y25[CONT], n26=nlr.y26[CONT];
+      const mvTxt=(n25!==null&&n26!==null)?`Net Claim Ratio moved from ${n25.toFixed(1)}% to ${n26.toFixed(1)}% YoY.`:'';
+      insight.textContent=`${clsLabel} GWP moved from ${fmtN(g25)} to ${fmtN(g26)} (${growth>=0?'+':''}${growth.toFixed(1)}%) YoY, with a Q2 2026 market share of ${share26.toFixed(2)}%. ${mvTxt}`;
+    }
+  }
+}
+
+// ─── UPDATE ALL ──────────────────────────────────────────────────────────────
+// Updates every tab's charts, tables, KPI cards and executive insight so the
+// class filter behaves consistently no matter which tab is currently visible.
+function updateDashboard(cls) {
+  buildGwpChart(cls);
+  buildGwpTable(cls);
+  buildMktShare(cls);
+  buildRankTable(cls);
+  buildNlrChart(cls);
+  buildContCharts(cls);
+  buildContKpis(cls);
+  document.getElementById('gwpChartTitle').textContent=`Class GWP Comparison – ${cls==='Total'?'All Classes (Total)':cls}`;
+}
+
+// ─── FILTER ──────────────────────────────────────────────────────────────────
+function setFilter(cls) {
+  activeClass=cls;
+  document.querySelectorAll('.fbtn').forEach(b=>{
+    b.classList.toggle('active',b.textContent.trim().replace('&','&').includes(cls==='Total'?'All Classes':cls));
+  });
+  updateDashboard(cls);
+}
+
+// ─── TABS ─────────────────────────────────────────────────────────────────────
+function switchTab(n) {
+  activeTab=n;
+  document.querySelectorAll('.tab-pane').forEach((p,i)=>p.classList.toggle('active',i===n));
+  document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',i===n));
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+window.addEventListener('load',()=>{
+  buildGwpChart('Total');
+  buildGwpTable('Total');
+  buildMotorCharts();
+  buildMotorTable();
+  buildMktShare('Total');
+  buildRankTable('Total');
+  buildNlrChart('Total');
+  buildContCharts('Total');
+  buildContKpis('Total');
+});
+</script>
+</body>
+</html>
