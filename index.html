@@ -140,7 +140,7 @@
 
     .dashboards {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 28px;
       max-width: 1050px;
       margin: 0 auto;
@@ -287,12 +287,6 @@
       font-size: 13px;
     }
 
-
-    @media (max-width: 980px) and (min-width: 761px) {
-      .dashboards {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-    }
 
     @media (max-width: 760px) {
       header {
@@ -460,6 +454,27 @@
         </p>
 
         <a class="open-btn" href="claims-ratio-dashboard.html">
+          Open Dashboard
+          <span class="arrow" aria-hidden="true">→</span>
+        </a>
+      </article>
+
+      <!-- Dashboard D -->
+      <article class="dashboard-card">
+        <div class="card-top">
+          <div class="card-letter">D</div>
+          <div class="card-type">User Transactions</div>
+        </div>
+
+        <h2>User Transaction Dashboard</h2>
+        <div class="subtitle">As of 31.08.2026</div>
+
+        <p class="description">
+          Medical Claims user transaction summary covering operational activity,
+          user-level transactions and management review insights.
+        </p>
+
+        <a class="open-btn" href="user-transaction-dashboard.html">
           Open Dashboard
           <span class="arrow" aria-hidden="true">→</span>
         </a>
